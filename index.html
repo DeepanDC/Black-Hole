@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hole - A Modern UI Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body>
+    <div class="background-shapes"></div>
+    <div id="game-setup" class="glass-container animate__animated animate__fadeIn">
+        <h1>Black Hole</h1>
+        <div class="control-group">
+            <label for="playerCount">Number of Players:</label>
+            <select id="playerCount">
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+            </select>
+        </div>
+        <div id="player-names"></div>
+        <button id="startGame" class="neumorphic-button">Start Game</button>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <div id="game-board" class="animate__animated animate__zoomIn"></div>
+        <div id="game-info" class="glass-container animate__animated animate__fadeInRight">
+            <h2>Game Status</h2>
+            <p>Current Player: <span id="currentPlayerName"></span></p>
+            <p>Next Number: <span id="nextNumber"></span></p>
+            <div id="scores"></div>
+            <button id="restartGame" class="neumorphic-button">New Game</button>
+        </div>
+    </div>
+
+    <div id="winner-overlay" class="hidden">
+        <div class="glass-container">
+            <h2 id="winnerText"></h2>
+            <button id="playAgain" class="neumorphic-button">Play Again</button>
+        </div>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

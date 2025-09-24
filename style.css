@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --bg-color: #f0f2f5;
+    --primary-color: #7b4397;
+    --secondary-color: #dc2430;
+    --text-color: #333;
+    --shadow-light: rgba(255, 255, 255, 0.7);
+    --shadow-dark: rgba(0, 0, 0, 0.1);
+    --player1-color: #ffadad; /* Soft Red */
+    --player2-color: #a0c4ff; /* Soft Blue */
+    --player3-color: #9bf6ff; /* Soft Cyan */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg-color);
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+.background-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    clip-path: circle(40% at 10% 10%);
+    z-index: -1;
+}
+
+.background-shapes::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, var(--primary-color), var(--secondary-color));
+    clip-path: circle(30% at 90% 90%);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Glassmorphism Container */
+.glass-container {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 var(--shadow-dark);
+    text-align: center;
+}
+
+#game-setup {
+    width: 350px;
+}
+
+#game-setup h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    background: -webkit-linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.control-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.control-group input,
+.control-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+/* Neumorphism Button */
+.neumorphic-button {
+    background: var(--bg-color);
+    border: none;
+    border-radius: 50px;
+    padding: 15px 30px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--text-color);
+    cursor: pointer;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    transition: all 0.2s ease-in-out;
+}
+
+.neumorphic-button:hover {
+    box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
+}
+
+.neumorphic-button:active {
+    box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+}
+
+#game-container {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+#game-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+}
+
+.circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: var(--bg-color);
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    transition: all 0.2s ease-in-out;
+}
+
+.circle:hover {
+    box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
+}
+
+.circle.placed {
+    box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+    cursor: not-allowed;
+    animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* --- FIX WAS HERE --- */
+/* The player color classes now directly target the .circle element */
+.circle.player1 { background-color: var(--player1-color); }
+.circle.player2 { background-color: var(--player2-color); }
+.circle.player3 { background-color: var(--player3-color); }
+/* --- END OF FIX --- */
+
+.circle.black-hole {
+    background-color: #333;
+    box-shadow: inset 8px 8px 16px #000, inset -8px -8px 16px #555;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); }
+    70% { transform: scale(1); }
+    100% { transform: scale(0.95); }
+}
+
+#game-info {
+    width: 250px;
+}
+
+#scores p {
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+#winner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+#winner-overlay .glass-container {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 99;
+}
