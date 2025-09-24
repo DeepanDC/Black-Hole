@@ -1,113 +1,140 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
+/* --- THEME & COLOR DEFINITIONS --- */
 :root {
-    /* --- DARK THEME PALETTE --- */
-    --bg-color: #2c2f33; /* Dark Charcoal */
-    --primary-color: #8c78ff; /* Brighter Purple for contrast */
-    --secondary-color: #ff5e62; /* Brighter Red for contrast */
-    --text-color: #e0e5ec; /* Soft Off-white */
-    
-    /* Re-engineered shadows for dark mode */
-    --shadow-light: #373a40; /* This is the HIGHLIGHT in dark mode */
-    --shadow-dark: #212326;  /* This is the deep shadow */
+    /* --- Light Theme (Default) --- */
+    --font-family: 'Poppins', sans-serif;
+    --bg-color: #e0e5ec;
+    --text-color: #3f4a6b;
+    --text-color-light: #8692a7;
+    --accent-color-1: #6d5dfc;
+    --accent-color-2: #8abdff;
+    --shadow-light: #ffffff;
+    --shadow-dark: #a3b1c6;
+    --card-bg: transparent;
+    --card-border-color: rgba(255, 255, 255, 0);
+    --input-bg: #e0e5ec;
+    --bot-icon-stroke: #333;
 
+    /* Player Colors */
     --player1-color: #ffafaf;
     --player2-color: #a0d2ff;
     --player3-color: #98f5e1;
 }
 
+body.dark-theme {
+    /* --- Dark Theme --- */
+    --bg-color: #2c2f33;
+    --text-color: #e0e5ec;
+    --text-color-light: #99aab5;
+    --accent-color-1: #8c78ff;
+    --accent-color-2: #ff5e62;
+    --shadow-light: #373a40;
+    --shadow-dark: #212326;
+    --card-bg: rgba(40, 42, 46, 0.6);
+    --card-border-color: rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(0, 0, 0, 0.2);
+    --bot-icon-stroke: #e0e5ec;
+}
+
+/* --- BASE & LAYOUT --- */
+* {
+    box-sizing: border-box;
+    transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-family);
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+}
+
+#app-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
+    width: 100%;
     padding: 20px;
-    box-sizing: border-box;
-    background-color: var(--bg-color);
-    overflow: hidden; /* Prevents background shapes from causing scrollbars */
-    color: var(--text-color);
-}
-
-/* --- Vibrant Background --- */
-.background-shapes {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    opacity: 0.8; /* Slightly muted to not overwhelm the dark theme */
-    clip-path: circle(40% at 10% 10%);
-    z-index: -1;
-}
-
-.background-shapes::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(-45deg, var(--primary-color), var(--secondary-color));
-    clip-path: circle(30% at 90% 90%);
+    position: relative;
+    z-index: 1;
 }
 
 .hidden { display: none !important; }
 
-/* --- Dark Glassmorphism Container --- */
-.glass-container {
-    background: rgba(40, 42, 46, 0.6); /* Dark semi-transparent background */
+/* --- BACKGROUNDS & DECORATIONS --- */
+.background-wrapper, .background-graphic { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+.background-graphic {
+    background: linear-gradient(45deg, var(--accent-color-1), var(--accent-color-2));
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    opacity: 0.1;
+    transition: opacity 0.5s ease;
+}
+
+/* Light Mode Animated BG */
+#light-mode-bg { opacity: 0; transition: opacity 0.5s ease; background: radial-gradient(ellipse at bottom, #b3d4e8 0%, #a3c2d6 100%); }
+body:not(.dark-theme) #light-mode-bg { opacity: 1; }
+
+/* Dark Mode Animated BG */
+#dark-mode-bg { opacity: 0; transition: opacity 0.5s ease; }
+body.dark-theme #dark-mode-bg { opacity: 1; }
+@keyframes move { 100% { transform: translate3d(0, 0, 1px) rotate(360deg); } }
+.particle { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-color-1); animation: move 25s linear infinite; }
+.particle:nth-child(1) { top: 20%; left: 20%; animation-duration: 18s; } .particle:nth-child(2) { top: 80%; left: 80%; animation-duration: 12s; } .particle:nth-child(3) { top: 10%; left: 90%; animation-duration: 29s; } .particle:nth-child(4) { top: 70%; left: 10%; animation-duration: 22s; } .particle:nth-child(5) { top: 20%; left: 50%; animation-duration: 15s; } .particle:nth-child(6) { top: 80%; left: 50%; animation-duration: 35s; } .particle:nth-child(7) { top: 90%; left: 25%; animation-duration: 20s; } .particle:n.particle:nth-child(8) { top: 50%; left: 20%; animation-duration: 11s; } .particle:nth-child(9) { top: 10%; left: 10%; animation-duration: 13s; } .particle:nth-child(10) { top: 40%; left: 80%; animation-duration: 27s; } .particle:nth-child(11) { top: 60%; left: 60%; animation-duration: 19s; } .particle:nth-child(12) { top: 50%; left: 90%; animation-duration: 24s; }
+
+/* --- THEME TOGGLE SWITCH --- */
+.theme-switch-wrapper { position: absolute; top: 20px; right: 20px; z-index: 100; }
+.theme-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent-color-1); }
+input:checked + .slider:before { transform: translateX(26px); }
+
+/* --- CARDS & CONTAINERS (DUAL THEME) --- */
+.card {
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 30px;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--card-border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 100%;
     max-width: 400px;
-    box-sizing: border-box;
 }
+body:not(.dark-theme) .card { box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); }
 
-#game-setup h1 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-    background: -webkit-linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* --- Game Layout --- */
-#game-container { display: flex; gap: 50px; align-items: center; justify-content: center; width: 100%; max-width: 1200px; }
+/* --- GAME LAYOUT & ELEMENTS (DUAL THEME) --- */
+#game-container { display: flex; flex-wrap: wrap; gap: 50px; align-items: center; justify-content: center; width: 100%; max-width: 1200px; }
 #board-area { position: relative; padding: 50px; }
 #game-board { display: flex; flex-direction: column; align-items: center; }
 
-/* --- Player Icons (Dark Mode) --- */
+/* Player Icons */
 .player-icon {
     width: 60px; height: 60px; border-radius: 50%; position: absolute;
     background-color: var(--bg-color);
     box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
     display: none; justify-content: center; align-items: center;
-    font-size: 1.5em; font-weight: 600; transition: all 0.4s ease;
+    font-size: 1.5em; font-weight: 600;
 }
-
 #player1-icon { bottom: 0; left: 0; transform: translate(-20%, 20%); }
 #player2-icon { bottom: 0; right: 0; transform: translate(20%, 20%); }
 #player3-icon { top: 0; left: 50%; transform: translate(-50%, -50%); }
-
 .player-icon.active { animation: glow 1.5s infinite alternate; }
 @keyframes glow {
-    from { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 5px var(--secondary-color); }
-    to { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 30px var(--primary-color), 0 0 10px var(--primary-color); }
+    from { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 5px var(--accent-color-2); }
+    to { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 30px var(--accent-color-1); }
 }
-
 .player-icon.bot-icon {
-    /* Bot Icon SVG with stroke color changed to light grey */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='2' stroke='%23e0e5ec' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10a2 2 0 0 1 2 2v1l1 1v3l-1 1h-12l-1 -1v-3l1 -1v-1a2 2 0 0 1 2 -2z'/%3E%3Cpath d='M10 16h4'/%3E%3Ccircle cx='8.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='15.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Cpath d='M9 7l-1-4'/%3E%3Cpath d='M15 7l1-4'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='2' stroke='var(--bot-icon-stroke)' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10a2 2 0 0 1 2 2v1l1 1v3l-1 1h-12l-1 -1v-3l1 -1v-1a2 2 0 0 1 2 -2z'/%3E%3Cpath d='M10 16h4'/%3E%3Ccircle cx='8.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='15.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Cpath d='M9 7l-1-4'/%3E%3Cpath d='M15 7l1-4'/%3E%3C/svg%3E");
     background-size: 60%; background-repeat: no-repeat; background-position: center;
 }
 
-/* --- Dark Realistic 3D Game Circles --- */
+/* Game Circles */
 .row { display: flex; justify-content: center; }
 .circle {
     width: 50px; height: 50px; border-radius: 50%; margin: 5px;
@@ -115,64 +142,55 @@ body {
     font-size: 1.2em; font-weight: 600; cursor: pointer;
     background: var(--bg-color);
     box-shadow: 7px 7px 14px var(--shadow-dark), -7px -7px 14px var(--shadow-light);
-    transition: all 0.2s ease-out; flex-shrink: 0;
+    flex-shrink: 0;
 }
 .circle:hover { transform: scale(1.05); }
 .circle.placed, .circle:active {
     box-shadow: inset 7px 7px 14px var(--shadow-dark), inset -7px -7px 14px var(--shadow-light);
     transform: scale(0.98); cursor: not-allowed;
-    animation: pop 0.2s ease-out;
 }
-@keyframes pop { from { opacity: 0.5; } to { opacity: 1; } }
-
-.circle.player1 { background-color: var(--player1-color); color: #333; }
-.circle.player2 { background-color: var(--player2-color); color: #333; }
-.circle.player3 { background-color: var(--player3-color); color: #333; }
-
-.circle.black-hole {
-    background: radial-gradient(circle, #434343 0%, #000000 100%);
-    box-shadow: inset 5px 5px 15px #000;
-    animation: pulse 2s infinite ease-in-out;
-}
+.circle.player1, .circle.player2, .circle.player3 { color: #333; }
+.circle.player1 { background-color: var(--player1-color); }
+.circle.player2 { background-color: var(--player2-color); }
+.circle.player3 { background-color: var(--player3-color); }
+.circle.black-hole { background: radial-gradient(circle, #434343 0%, #000000 100%); box-shadow: inset 5px 5px 15px #000; animation: pulse 2s infinite ease-in-out; }
 @keyframes pulse { 0%, 100% { transform: scale(0.98); } 50% { transform: scale(1.02); } }
 
-/* --- Buttons & Controls (Dark Mode) --- */
-.neumorphic-button {
+/* --- BUTTONS & CONTROLS (DUAL THEME) --- */
+.button-3d {
     background: var(--bg-color); border: none; border-radius: 50px; padding: 15px 30px;
     font-size: 1em; font-weight: 600; color: var(--text-color); cursor: pointer;
     box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
-    transition: all 0.2s ease-in-out;
 }
-.neumorphic-button:hover { color: var(--primary-color); }
-.neumorphic-button:active {
-    box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
-}
-.control-group input, .control-group select {
-    width: 100%; padding: 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.2); font-family: 'Poppins', sans-serif; font-size: 1em; box-sizing: border-box;
-    color: var(--text-color);
-}
+.button-3d:hover { color: var(--accent-color-1); }
+.button-3d:active { box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light); }
+
 .control-group { margin-bottom: 20px; text-align: left; }
-.control-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-.bot-option { text-align: center; display: flex; align-items: center; justify-content: center; }
+.control-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-color-light); }
+.control-group input, .control-group select {
+    width: 100%; padding: 10px; border-radius: 10px; border: none;
+    background: var(--input-bg); font-family: var(--font-family); font-size: 1em; color: var(--text-color);
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+}
+.bot-option { text-align: center; display: flex; align-items: center; justify-content: center; color: var(--text-color); }
 .bot-option input { margin-right: 8px; }
 
 /* --- Winner Overlay --- */
 #winner-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7); /* Darker overlay */
+    background: rgba(0, 0, 0, 0.7);
     display: flex; justify-content: center; align-items: center;
-    z-index: 100; padding: 20px; box-sizing: border-box;
+    z-index: 1000; padding: 20px;
 }
 
-/* --- Responsive Design --- */
+/* --- RESPONSIVE DESIGN --- */
 @media (max-width: 900px) {
     #game-container { flex-direction: column; gap: 30px; }
     #board-area { padding: 50px 30px; }
-    #game-info { max-width: 450px; }
+    #game-info { max-width: 450px; margin: 0 auto; }
 }
 @media (max-width: 480px) {
-    body { padding: 10px; }
+    #app-wrapper { padding: 10px; }
     #board-area { padding: 40px 0; }
     .player-icon { width: 50px; height: 50px; }
     #player1-icon { bottom: -10px; left: -10px; }

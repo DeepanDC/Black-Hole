@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('player2-icon'),
         document.getElementById('player3-icon')
     ];
+    const themeToggle = document.getElementById('theme-checkbox');
 
     const jsConfetti = new JSConfetti();
 
@@ -32,11 +33,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let isBotGame = false;
     let isBotThinking = false;
 
-    // --- FUNCTIONS ---
+    // --- THEME SWITCH LOGIC (RUNS IMMEDIATELY) ---
+    (function () {
+        function applyTheme(theme) {
+            document.body.classList.toggle('dark-theme', theme === 'dark');
+            themeToggle.checked = theme === 'dark';
+        }
 
+        themeToggle.addEventListener('change', () => {
+            const newTheme = themeToggle.checked ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+    })();
+    
+    // --- GAME FUNCTIONS ---
     function getInitials(name = '') {
-        const parts = name.trim().split(' ');
-        if (parts.length > 1 && parts[parts.length - 1]) {
+        const parts = name.trim().split(' ').filter(p => p);
+        if (parts.length > 1) {
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         }
         return name.substring(0, 2).toUpperCase();
@@ -59,16 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        playerIcons.forEach(icon => icon.style.transform = '');
-
         if (playerCount === 2) {
-            playerIcons[0].style.transform = 'translate(-20%, 20%)';
-            playerIcons[1].style.transform = 'translate(20%, 20%)';
             playerIcons[2].style.display = 'none';
-        } else {
-            playerIcons[0].style.transform = 'translate(-20%, 20%)';
-            playerIcons[1].style.transform = 'translate(20%, 20%)';
-            playerIcons[2].style.transform = 'translate(-50%, -50%)';
         }
     }
 

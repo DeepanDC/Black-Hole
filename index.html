@@ -3,57 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Hole - Dark Materialistic Edition</title>
+    <title>Black Hole - Professional Edition</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
-    <!-- The vibrant background shapes will be controlled by CSS -->
-    <div class="background-shapes"></div>
-
-    <div id="game-setup" class="glass-container animate__animated animate__fadeIn">
-        <h1>Black Hole</h1>
-        
-        <div class="control-group bot-option">
-            <input type="checkbox" id="playWithBot">
-            <label for="playWithBot">Play against DC Bot</label>
-        </div>
-
-        <div class="control-group">
-            <label for="playerCount">Number of Players:</label>
-            <select id="playerCount">
-                <option value="2">2 Players</option>
-                <option value="3">3 Players</option>
-            </select>
-        </div>
-
-        <div id="player-names"></div>
-        <button id="startGame" class="neumorphic-button">Start Game</button>
-    </div>
-
-    <div id="game-container" class="hidden">
-        <div id="board-area">
-            <div id="player1-icon" class="player-icon"></div>
-            <div id="player2-icon" class="player-icon"></div>
-            <div id="player3-icon" class="player-icon"></div>
-            <div id="game-board" class="animate__animated animate__zoomIn"></div>
-        </div>
-        
-        <div id="game-info" class="glass-container animate__animated animate__fadeInRight">
-            <h2>Game Status</h2>
-            <p>Current Player: <span id="currentPlayerName"></span></p>
-            <p>Next Number: <span id="nextNumber"></span></p>
-            <div id="scores"></div>
-            <button id="restartGame" class="neumorphic-button">New Game</button>
+    <!-- Animated Backgrounds for both themes -->
+    <div class="background-wrapper">
+        <div id="light-mode-bg"></div>
+        <div id="dark-mode-bg">
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
         </div>
     </div>
 
-    <div id="winner-overlay" class="hidden">
-        <div class="glass-container">
-            <h2 id="winnerText"></h2>
-            <button id="playAgain" class="neumorphic-button">Play Again</button>
-        </div>
+    <!-- Decorative Top-Corner Graphic -->
+    <div class="background-graphic"></div>
+
+    <!-- Theme Toggle Switch -->
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="theme-checkbox">
+            <input type="checkbox" id="theme-checkbox" />
+            <div class="slider"></div>
+        </label>
     </div>
+
+    <!-- Main Application Wrapper for Centering -->
+    <main id="app-wrapper">
+        <div id="game-setup" class="card animate__animated animate__fadeIn">
+            <h1>Black Hole</h1>
+            <div class="control-group bot-option">
+                <input type="checkbox" id="playWithBot">
+                <label for="playWithBot">Play against DC Bot</label>
+            </div>
+            <div class="control-group">
+                <label for="playerCount">Number of Players:</label>
+                <select id="playerCount">
+                    <option value="2">2 Players</option>
+                    <option value="3">3 Players</option>
+                </select>
+            </div>
+            <div id="player-names"></div>
+            <button id="startGame" class="button-3d">Start Game</button>
+        </div>
+
+        <div id="game-container" class="hidden">
+            <div id="board-area">
+                <div id="player1-icon" class="player-icon"></div>
+                <div id="player2-icon" class="player-icon"></div>
+                <div id="player3-icon" class="player-icon"></div>
+                <div id="game-board" class="animate__animated animate__zoomIn"></div>
+            </div>
+            <div id="game-info" class="card animate__animated animate__fadeInRight">
+                <h2>Game Status</h2>
+                <p>Current Player: <span id="currentPlayerName"></span></p>
+                <p>Next Number: <span id="nextNumber"></span></p>
+                <div id="scores"></div>
+                <button id="restartGame" class="button-3d">New Game</button>
+            </div>
+        </div>
+
+        <div id="winner-overlay" class="hidden">
+            <div class="card">
+                <h2 id="winnerText"></h2>
+                <button id="playAgain" class="button-3d">Play Again</button>
+            </div>
+        </div>
+    </main>
 
     <canvas id="confetti-canvas"></canvas>
 
