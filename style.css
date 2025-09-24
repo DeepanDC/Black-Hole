@@ -19,8 +19,10 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
     background: var(--bg-color);
-    overflow: hidden;
+    overflow-x: hidden;
     color: var(--text-color);
 }
 
@@ -57,10 +59,9 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 8px 32px 0 var(--shadow-dark);
     text-align: center;
-}
-
-#game-setup {
-    width: 350px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
 }
 
 #game-setup h1 {
@@ -119,7 +120,10 @@ body {
 #game-container {
     display: flex;
     gap: 40px;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
 }
 
 #game-board {
@@ -147,6 +151,7 @@ body {
     background-color: var(--bg-color);
     box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
     transition: all 0.2s ease-in-out;
+    flex-shrink: 0; /* Prevents circles from shrinking */
 }
 
 .circle:hover {
@@ -165,12 +170,9 @@ body {
     100% { transform: scale(1); }
 }
 
-/* --- FIX WAS HERE --- */
-/* The player color classes now directly target the .circle element */
 .circle.player1 { background-color: var(--player1-color); }
 .circle.player2 { background-color: var(--player2-color); }
 .circle.player3 { background-color: var(--player3-color); }
-/* --- END OF FIX --- */
 
 .circle.black-hole {
     background-color: #333;
@@ -185,7 +187,8 @@ body {
 }
 
 #game-info {
-    width: 250px;
+    width: 100%;
+    max-width: 300px;
 }
 
 #scores p {
@@ -204,6 +207,8 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 100;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 #winner-overlay .glass-container {
@@ -229,4 +234,48 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 99;
+}
+
+/* --- RESPONSIVE DESIGN MEDIA QUERIES --- */
+
+/* For Tablets and smaller devices */
+@media (max-width: 900px) {
+    #game-container {
+        flex-direction: column; /* Stack board and info vertically */
+        gap: 20px;
+    }
+    #game-info {
+        max-width: 400px; /* Allow info panel to be wider */
+    }
+}
+
+/* For Mobile Phones */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .glass-container {
+        padding: 20px;
+    }
+
+    #game-setup h1 {
+        font-size: 2em;
+    }
+
+    .circle {
+        width: 40px;
+        height: 40px;
+        margin: 4px;
+        font-size: 1em;
+    }
+}
+
+/* For Very Small Mobile Phones */
+@media (max-width: 360px) {
+    .circle {
+        width: 35px;
+        height: 35px;
+        margin: 3px;
+    }
 }
