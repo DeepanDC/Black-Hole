@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hole - Game Hub</title>
+    <style>
+        /* --- UNIFIED CSS FOR A CONSISTENT LOOK --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        :root {
+            --font-family: 'Poppins', sans-serif;
+            --bg-color: #e0e5ec; --text-color: #3f4a6b; --text-color-light: #8692a7;
+            --accent-color-1: #6d5dfc; --accent-color-2: #8abdff;
+            --shadow-light: #ffffff; --shadow-dark: #a3b1c6;
+            --card-bg: transparent; --card-border-color: rgba(255, 255, 255, 0); --input-bg: #e0e5ec;
+            --bot-icon-stroke: #333;
+            --player1-color: #ffafaf; --player2-color: #a0d2ff; --player3-color: #98f5e1;
+        }
+        body.dark-theme {
+            --bg-color: #2c2f33; --text-color: #e0e5ec; --text-color-light: #99aab5;
+            --accent-color-1: #8c78ff; --accent-color-2: #ff5e62;
+            --shadow-light: #373a40; --shadow-dark: #212326;
+            --card-bg: rgba(40, 42, 46, 0.6); --card-border-color: rgba(255, 255, 255, 0.1); --input-bg: rgba(0, 0, 0, 0.2);
+            --bot-icon-stroke: #e0e5ec;
+        }
+        * { box-sizing: border-box; transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease, opacity 0.4s ease; }
+        body { font-family: var(--font-family); margin: 0; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        main { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 80px 20px 20px 20px; }
+        .background-wrapper, .background-graphic { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .background-graphic { background: linear-gradient(45deg, var(--accent-color-1), var(--accent-color-2)); clip-path: polygon(0 0, 100% 0, 0 100%); opacity: 0.1; }
+        #light-mode-bg { opacity: 0; background: radial-gradient(ellipse at bottom, #b3d4e8 0%, #a3c2d6 100%); transition: opacity 0.5s ease; }
+        body:not(.dark-theme) #light-mode-bg { opacity: 1; }
+        #dark-mode-bg { opacity: 0; transition: opacity 0.5s ease; } body.dark-theme #dark-mode-bg { opacity: 1; }
+        @keyframes move { 100% { transform: translate3d(0, 0, 1px) rotate(360deg); } }
+        .particle { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-color-1); animation: move 25s linear infinite; }
+        .particle:nth-child(odd) { animation-duration: 18s; } .particle:nth-child(even) { animation-duration: 30s; }
+        .theme-switch-wrapper { position: fixed; top: 20px; right: 20px; z-index: 100; }
+        .theme-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color-1); } input:checked + .slider:before { transform: translateX(26px); }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--card-border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); text-align: center; width: 100%; }
+        body:not(.dark-theme) .card { box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); }
+        .button-3d { background: var(--bg-color); border: none; border-radius: 50px; padding: 15px 30px; font-size: 1em; font-weight: 600; color: var(--text-color); cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); text-decoration: none; }
+        .button-3d:hover { color: var(--accent-color-1); } .button-3d:active { box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light); }
+        .back-to-menu-btn { position: absolute; top: 20px; left: 20px; z-index: 10; padding: 10px 20px; }
+        #bh-game-container { display: flex; flex-wrap: wrap; gap: 50px; align-items: center; justify-content: center; width: 100%; max-width: 1200px; }
+        #bh-board-area { position: relative; padding: 50px; } #bh-game-board { display: flex; flex-direction: column; align-items: center; }
+        .player-icon { width: 60px; height: 60px; border-radius: 50%; position: absolute; background-color: var(--bg-color); box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); display: none; justify-content: center; align-items: center; font-size: 1.5em; font-weight: 600; }
+        #bh-player1-icon { bottom: 0; left: 0; transform: translate(-20%, 20%); } #bh-player2-icon { bottom: 0; right: 0; transform: translate(20%, 20%); } #bh-player3-icon { top: 0; left: 50%; transform: translate(-50%, -50%); }
+        .player-icon.active { animation: glow 1.5s infinite alternate; }
+        @keyframes glow { from { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 5px var(--accent-color-2); } to { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 30px var(--accent-color-1); } }
+        .player-icon.bot-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='2' stroke='var(--bot-icon-stroke)' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10a2 2 0 0 1 2 2v1l1 1v3l-1 1h-12l-1 -1v-3l1 -1v-1a2 2 0 0 1 2 -2z'/%3E%3Cpath d='M10 16h4'/%3E%3Ccircle cx='8.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='15.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Cpath d='M9 7l-1-4'/%3E%3Cpath d='M15 7l1-4'/%3E%3C/svg%3E"); background-size: 60%; background-repeat: no-repeat; background-position: center; }
+        .row { display: flex; justify-content: center; }
+        .circle { width: 50px; height: 50px; border-radius: 50%; margin: 5px; display: flex; justify-content: center; align-items: center; font-size: 1.2em; font-weight: 600; cursor: pointer; background: var(--bg-color); box-shadow: 7px 7px 14px var(--shadow-dark), -7px -7px 14px var(--shadow-light); flex-shrink: 0; }
+        .circle.placed, .circle:active { box-shadow: inset 7px 7px 14px var(--shadow-dark), inset -7px -7px 14px var(--shadow-light); cursor: not-allowed; }
+        .circle.player1, .circle.player2, .circle.player3 { color: #333; } .circle.player1 { background-color: var(--player1-color); } .circle.player2 { background-color: var(--player2-color); } .circle.player3 { background-color: var(--player3-color); }
+        .circle.black-hole { background: radial-gradient(circle, #434343 0%, #000000 100%); box-shadow: inset 5px 5px 15px #000; animation: pulse 2s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { transform: scale(0.98); } 50% { transform: scale(1.02); } }
+        .winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .winner-overlay.hidden { display: none; }
+        .control-group { margin-bottom: 20px; text-align: left; } .control-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-color-light); }
+        .control-group input, .control-group select { width: 100%; padding: 10px; border-radius: 10px; border: none; background: var(--input-bg); font-family: var(--font-family); font-size: 1em; color: var(--text-color); box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
+        .bot-option { text-align: center; display: flex; align-items: center; justify-content: center; color: var(--text-color); } .bot-option input { margin-right: 8px; }
+        .hidden { display: none !important; }
+        @media (max-width: 768px) { #bh-game-container { flex-direction: column; } #bh-game-info { max-width: 450px; } }
+        @media (max-width: 480px) { .player-icon { width: 50px; height: 50px; } .circle { width: 40px; height: 40px; margin: 4px; font-size: 1em; } }
+    </style>
+</head>
+<body>
+    <div class="background-wrapper"><div id="light-mode-bg"></div><div id="dark-mode-bg"><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div></div></div>
+    <div class="background-graphic"></div>
+    <div class="theme-switch-wrapper"><label class="theme-switch" for="theme-checkbox"><input type="checkbox" id="theme-checkbox" /><div class="slider"></div></label></div>
+    
+    <main>
+        <a href="index.html" class="back-to-menu-btn button-3d">&larr; Main Menu</a>
+        <div id="bh-game-container">
+            <div id="bh-board-area">
+                <div id="bh-player1-icon" class="player-icon"></div><div id="bh-player2-icon" class="player-icon"></div><div id="bh-player3-icon" class="player-icon"></div>
+                <div id="bh-game-board"></div>
+            </div>
+            <div id="bh-game-info" class="card">
+                <h2>Black Hole</h2>
+                <div id="bh-setup-controls">
+                    <div class="control-group bot-option"><input type="checkbox" id="bh-playWithBot"><label for="bh-playWithBot">Play against DC Bot</label></div>
+                    <div class="control-group"><label for="bh-playerCount">Players:</label><select id="bh-playerCount"><option value="2">2</option><option value="3">3</option></select></div>
+                    <div id="bh-player-names"></div>
+                    <button id="bh-startGame" class="button-3d">Start</button>
+                </div>
+                <div id="bh-status-display" class="hidden">
+                    <p>Current Player: <span id="bh-currentPlayerName"></span></p>
+                    <p>Next Number: <span id="bh-nextNumber"></span></p>
+                    <div id="bh-scores"></div>
+                    <button id="bh-restartGame" class="button-3d">New Game</button>
+                </div>
+            </div>
+        </div>
+        <div id="bh-winner-overlay" class="winner-overlay hidden"><div class="card"><h2 id="bh-winnerText"></h2><button id="bh-playAgain" class="button-3d">Play Again</button></div></div>
+    </main>
+
+    <canvas id="confetti-canvas"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-checkbox');
+            function applyTheme(theme) { document.body.classList.toggle('dark-theme', theme === 'dark'); themeToggle.checked = theme === 'dark'; }
+            themeToggle.addEventListener('change', () => { const newTheme = themeToggle.checked ? 'dark' : 'light'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); });
+            const savedTheme = localStorage.getItem('theme'); const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+            const elements = {
+                setupControls: document.getElementById('bh-setup-controls'), statusDisplay: document.getElementById('bh-status-display'),
+                gameBoard: document.getElementById('bh-game-board'), playerCountSelect: document.getElementById('bh-playerCount'),
+                playWithBotCheckbox: document.getElementById('bh-playWithBot'), playerNamesContainer: document.getElementById('bh-player-names'),
+                startGameButton: document.getElementById('bh-startGame'), restartGameButton: document.getElementById('bh-restartGame'),
+                currentPlayerNameSpan: document.getElementById('bh-currentPlayerName'), nextNumberSpan: document.getElementById('bh-nextNumber'),
+                scoresDiv: document.getElementById('bh-scores'), winnerOverlay: document.getElementById('bh-winner-overlay'),
+                winnerText: document.getElementById('bh-winnerText'), playAgainButton: document.getElementById('bh-playAgain'),
+                playerIcons: [ document.getElementById('bh-player1-icon'), document.getElementById('bh-player2-icon'), document.getElementById('bh-player3-icon') ]
+            };
+            let state = {};
+
+            function resetState() { state = { playerCount: 2, playerNames: [], currentPlayerIndex: 0, playerNumbers: [], boardState: [], gameEnded: false, isBotGame: false, isBotThinking: false }; }
+            function getInitials(name = '') { const p = name.trim().split(' ').filter(Boolean); return p.length > 1 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : name.substring(0,2).toUpperCase(); }
+            function setupPlayerIcons() { for(let i=0;i<3;i++){ const icon=elements.playerIcons[i]; icon.style.display='none'; icon.classList.remove('bot-icon','active'); icon.textContent=''; } for(let i=0;i<state.playerCount;i++){ const icon=elements.playerIcons[i]; icon.style.display='flex'; if(state.isBotGame && i===1){ icon.classList.add('bot-icon'); }else{ icon.textContent=getInitials(state.playerNames[i]); } } if(state.playerCount===2) elements.playerIcons[2].style.display='none'; }
+            function updateActivePlayerIcon() { elements.playerIcons.forEach((icon, index) => icon.classList.toggle('active', index === state.currentPlayerIndex && !state.gameEnded)); }
+            function updatePlayerNameInputs() { state.isBotGame = elements.playWithBotCheckbox.checked; state.playerCount = state.isBotGame ? 2 : parseInt(elements.playerCountSelect.value); elements.playerCountSelect.value = state.playerCount; elements.playerCountSelect.disabled = state.isBotGame; elements.playerNamesContainer.innerHTML = ''; for (let i=1;i<=state.playerCount;i++){ const input = document.createElement('input'); input.type = 'text'; input.placeholder = `Player ${i}`; if (state.isBotGame && i===2) { input.value = 'DC Bot'; input.disabled = true; } else { input.value = `Player ${i}`; } elements.playerNamesContainer.appendChild(input); } }
+            function startGame() { state.gameEnded=false; state.isBotThinking=false; state.currentPlayerIndex=0; state.playerNumbers=Array(state.playerCount).fill(1); elements.scoresDiv.innerHTML=''; state.playerNames = Array.from(elements.playerNamesContainer.querySelectorAll('input')).map(i => i.value || i.placeholder); elements.setupControls.classList.add('hidden'); elements.statusDisplay.classList.remove('hidden'); setupPlayerIcons(); updateGameInfo(); initializeBoard(); }
+            function initializeBoard() { elements.gameBoard.innerHTML = ''; state.boardState = []; const rows = state.playerCount === 2 ? 6 : 7; for (let i = 1; i <= rows; i++) { const rowEl = document.createElement('div'); rowEl.classList.add('row'); for (let j=0;j<i;j++){ const circle = document.createElement('div'); circle.classList.add('circle'); circle.dataset.row=i-1; circle.dataset.col=j; circle.addEventListener('click', handleCircleClick); rowEl.appendChild(circle); state.boardState.push({ element: circle, value: 0, player: -1, row: i-1, col: j }); } elements.gameBoard.appendChild(rowEl); } }
+            function handleCircleClick(event) { if (state.gameEnded || state.isBotThinking || event.target.classList.contains('placed')) return; placeNumber(event.target, state.currentPlayerIndex); if (isBoardFull()) { endGame(); return; } switchPlayer(); if (state.isBotGame && state.currentPlayerIndex === 1 && !state.gameEnded) { makeBotMove(); } }
+            function switchPlayer() { state.currentPlayerIndex = (state.currentPlayerIndex + 1) % state.playerCount; updateGameInfo(); }
+            function placeNumber(circleEl, pIdx) { const max=state.playerCount===2?10:9; if(state.playerNumbers[pIdx]>max)return; const r=parseInt(circleEl.dataset.row),c=parseInt(circleEl.dataset.col); const idx=state.boardState.findIndex(s=>s.row===r&&s.col===c); const num=state.playerNumbers[pIdx]; circleEl.textContent=num; circleEl.classList.add(`player${pIdx+1}`,'placed'); if(idx!==-1){state.boardState[idx].value=num;state.boardState[idx].player=pIdx;} state.playerNumbers[pIdx]++; }
+            function makeBotMove() { state.isBotThinking = true; updateActivePlayerIcon(); setTimeout(() => { const available = state.boardState.filter(c => c.value === 0); if (available.length > 0) { const choice = available[Math.floor(Math.random() * available.length)]; placeNumber(choice.element, state.currentPlayerIndex); } if (isBoardFull()) { endGame(); return; } switchPlayer(); state.isBotThinking = false; }, 1200); }
+            function isBoardFull() { const total = state.playerCount === 2 ? 21 : 28; return state.playerNumbers.reduce((s, n) => s + n - 1, 0) >= total - 1; }
+            function endGame() { state.gameEnded = true; updateActivePlayerIcon(); let blackHole = null; state.boardState.forEach(c => { if (c.value === 0) { blackHole = { row: c.row, col: c.col }; c.element.classList.add('black-hole'); } }); calculateScores(blackHole); }
+            function getNeighbors(r, c) { const n=[]; const coords=[{r:r-1,c:c-1},{r:r-1,c:c},{r:r,c:c-1},{r:r,c:c+1},{r:r+1,c:c},{r:r+1,c:c+1}]; coords.forEach(coord => { const neighbor = state.boardState.find(s=>s.row===coord.r&&s.col===coord.c); if (neighbor) n.push(neighbor); }); return n; }
+            function calculateScores(blackHole) { const scores = Array(state.playerCount).fill(0); if (!blackHole) return; getNeighbors(blackHole.row, blackHole.col).forEach(n => { if (n.player !== -1) scores[n.player] += n.value; }); displayScores(scores); }
+            function displayScores(scores) { elements.scoresDiv.innerHTML='<h2>Final Scores</h2>'; let min=Infinity, winners=[]; scores.forEach((s, i)=>{ const p=document.createElement('p'); p.textContent=`${state.playerNames[i]}: ${s}`; elements.scoresDiv.appendChild(p); if (s<min){min=s;winners=[i];} else if(s===min){winners.push(i);} }); const winnerNames = winners.map(i=>state.playerNames[i]).join(' & '); elements.winnerText.textContent = winners.length > 1 ? `It's a tie: ${winnerNames}!` : `${winnerNames} Wins!`; elements.winnerOverlay.classList.remove('hidden'); if(winners.length===1 && (!state.isBotGame || winners[0]===0)){ new JSConfetti().addConfetti({emojis:['🎉','✨','🏆']}); } }
+            function updateGameInfo() { elements.currentPlayerNameSpan.textContent = state.playerNames[state.currentPlayerIndex]; const max = state.playerCount === 2 ? 10 : 9; elements.nextNumberSpan.textContent = state.playerNumbers[state.currentPlayerIndex] <= max ? state.playerNumbers[state.currentPlayerIndex] : '—'; updateActivePlayerIcon(); }
+            function init() { resetState(); elements.setupControls.classList.remove('hidden'); elements.gamePlay.classList.add('hidden'); elements.winnerOverlay.classList.add('hidden'); elements.gameBoard.innerHTML = ''; elements.playerIcons.forEach(icon => icon.style.display = 'none'); updatePlayerNameInputs(); }
+            
+            elements.startGameButton.addEventListener('click', startGame);
+            elements.restartGameButton.addEventListener('click', init);
+            elements.playAgainButton.addEventListener('click', () => { elements.winnerOverlay.classList.add('hidden'); startGame(); });
+            elements.playWithBotCheckbox.addEventListener('change', updatePlayerNameInputs); 
+            elements.playerCountSelect.addEventListener('change', updatePlayerNameInputs);
+
+            init();
+        });
+    </script>
+</body>
+</html>

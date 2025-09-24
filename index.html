@@ -2,48 +2,108 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- THIS IS THE KEY LINE FOR RESPONSIVENESS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Hole - A Responsive Game</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <title>Game Hub - Professional Edition</title>
+    <style>
+        /* --- UNIFIED CSS FOR A CONSISTENT LOOK --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        :root {
+            --font-family: 'Poppins', sans-serif;
+            --bg-color: #e0e5ec; --text-color: #3f4a6b; --text-color-light: #8692a7;
+            --accent-color-1: #6d5dfc; --accent-color-2: #8abdff;
+            --shadow-light: #ffffff; --shadow-dark: #a3b1c6;
+            --card-bg: transparent; --card-border-color: rgba(255, 255, 255, 0);
+        }
+        body.dark-theme {
+            --bg-color: #2c2f33; --text-color: #e0e5ec; --text-color-light: #99aab5;
+            --accent-color-1: #8c78ff; --accent-color-2: #ff5e62;
+            --shadow-light: #373a40; --shadow-dark: #212326;
+            --card-bg: rgba(40, 42, 46, 0.6); --card-border-color: rgba(255, 255, 255, 0.1);
+        }
+        * { box-sizing: border-box; transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease, opacity 0.4s ease; }
+        body { font-family: var(--font-family); margin: 0; background-color: var(--bg-color); color: var(--text-color); overflow: hidden; }
+        main { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; width: 100%; padding: 80px 20px 20px 20px; }
+        .background-wrapper, .background-graphic { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .background-graphic { background: linear-gradient(45deg, var(--accent-color-1), var(--accent-color-2)); clip-path: polygon(0 0, 100% 0, 0 100%); opacity: 0.1; }
+        #light-mode-bg { opacity: 0; background: radial-gradient(ellipse at bottom, #b3d4e8 0%, #a3c2d6 100%); transition: opacity 0.5s ease; }
+        body:not(.dark-theme) #light-mode-bg { opacity: 1; }
+        #dark-mode-bg { opacity: 0; transition: opacity 0.5s ease; } body.dark-theme #dark-mode-bg { opacity: 1; }
+        @keyframes move { 100% { transform: translate3d(0, 0, 1px) rotate(360deg); } }
+        .particle { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-color-1); animation: move 25s linear infinite; }
+        .particle:nth-child(odd) { animation-duration: 18s; } .particle:nth-child(even) { animation-duration: 30s; }
+        .theme-switch-wrapper { position: fixed; top: 20px; right: 20px; z-index: 100; }
+        .theme-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color-1); } input:checked + .slider:before { transform: translateX(26px); }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--card-border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); text-align: center; width: 100%; }
+        body:not(.dark-theme) .card { box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); }
+        .button-3d, .card-link { background: var(--bg-color); border: none; border-radius: 50px; padding: 15px 30px; font-size: 1em; font-weight: 600; color: var(--text-color); cursor: pointer; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); text-decoration: none; display: inline-block; }
+        .button-3d:hover, .card-link:hover { color: var(--accent-color-1); } .button-3d:active, .card-link:active { box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light); }
+        .hub-container { max-width: 900px; } .hub-title { font-size: 3em; text-align: center; color: var(--text-color); }
+        .game-list { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .game-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .game-card-image { height: 180px; background-size: cover; background-position: center; }
+        .game-card-image.black-hole-bg { background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cdefs%3E%3CradialGradient id="g" cx="50%25" cy="50%25" r="50%25"%3E%3Cstop offset="70%25" stop-color="%236d5dfc"/%3E%3Cstop offset="100%25" stop-color="%232c2f33"/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx="50" cy="50" r="50" fill="url(%23g)"/%3E%3C/svg%3E'); }
+        .game-card-image.chess-bg { background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cpath d="M50 0 L100 25 L50 50 L0 25 Z" fill="%23e0e5ec"/%3E%3Cpath d="M50 50 L100 25 L100 75 L50 100 Z" fill="%23a3b1c6"/%3E%3Cpath d="M0 25 L50 50 L50 100 L0 75 Z" fill="%23c8d0e7"/%3E%3C/svg%3E'); }
+        .game-card h2 { margin: 20px; } .game-card p { padding: 0 20px; color: var(--text-color-light); flex-grow: 1; } .game-card .card-link { margin: 20px; }
+        @media (max-width: 768px) { .game-list { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .hub-title { font-size: 2em; } }
+    </style>
 </head>
 <body>
-    <div class="background-shapes"></div>
-    <div id="game-setup" class="glass-container animate__animated animate__fadeIn">
-        <h1>Black Hole</h1>
-        <div class="control-group">
-            <label for="playerCount">Number of Players:</label>
-            <select id="playerCount">
-                <option value="2">2 Players</option>
-                <option value="3">3 Players</option>
-            </select>
-        </div>
-        <div id="player-names"></div>
-        <button id="startGame" class="neumorphic-button">Start Game</button>
-    </div>
-
-    <div id="game-container" class="hidden">
-        <div id="game-board" class="animate__animated animate__zoomIn"></div>
-        <div id="game-info" class="glass-container animate__animated animate__fadeInRight">
-            <h2>Game Status</h2>
-            <p>Current Player: <span id="currentPlayerName"></span></p>
-            <p>Next Number: <span id="nextNumber"></span></p>
-            <div id="scores"></div>
-            <button id="restartGame" class="neumorphic-button">New Game</button>
+    <div class="background-wrapper">
+        <div id="light-mode-bg"></div>
+        <div id="dark-mode-bg">
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
         </div>
     </div>
-
-    <div id="winner-overlay" class="hidden">
-        <div class="glass-container">
-            <h2 id="winnerText"></h2>
-            <button id="playAgain" class="neumorphic-button">Play Again</button>
-        </div>
+    <div class="background-graphic"></div>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="theme-checkbox">
+            <input type="checkbox" id="theme-checkbox" />
+            <div class="slider"></div>
+        </label>
     </div>
+    <main>
+        <div class="hub-container">
+            <h1 class="hub-title">Game Hub</h1>
+            <div class="game-list">
+                <div class="game-card card">
+                    <div class="game-card-image black-hole-bg"></div>
+                    <h2>Black Hole</h2>
+                    <p>A tactical game of numbers and connections. Outsmart your opponent by avoiding the black hole!</p>
+                    <a href="black-hole.html" class="card-link">Play Game</a>
+                </div>
+                <div class="game-card card">
+                    <div class="game-card-image chess-bg"></div>
+                    <h2>Chess</h2>
+                    <p>The ultimate game of strategy and intellect. Command your army and claim victory through checkmate.</p>
+                    <a href="chess.html" class="card-link">Play Game</a>
+                </div>
+            </div>
+        </div>
+    </main>
 
-    <canvas id="confetti-canvas"></canvas>
-
-    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // Self-contained Theme Controller for the Main Page
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-checkbox');
+            function applyTheme(theme) {
+                document.body.classList.toggle('dark-theme', theme === 'dark');
+                themeToggle.checked = theme === 'dark';
+            }
+            themeToggle.addEventListener('change', () => {
+                const newTheme = themeToggle.checked ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+        });
+    </script>
 </body>
 </html>
