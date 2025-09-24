@@ -1,15 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 :root {
-    --bg-color: #f0f2f5;
-    --primary-color: #7b4397;
-    --secondary-color: #dc2430;
-    --text-color: #333;
-    --shadow-light: rgba(255, 255, 255, 0.7);
-    --shadow-dark: rgba(0, 0, 0, 0.1);
-    --player1-color: #ffadad; /* Soft Red */
-    --player2-color: #a0c4ff; /* Soft Blue */
-    --player3-color: #9bf6ff; /* Soft Cyan */
+    /* --- DARK THEME PALETTE --- */
+    --bg-color: #2c2f33; /* Dark Charcoal */
+    --primary-color: #8c78ff; /* Brighter Purple for contrast */
+    --secondary-color: #ff5e62; /* Brighter Red for contrast */
+    --text-color: #e0e5ec; /* Soft Off-white */
+    
+    /* Re-engineered shadows for dark mode */
+    --shadow-light: #373a40; /* This is the HIGHLIGHT in dark mode */
+    --shadow-dark: #212326;  /* This is the deep shadow */
+
+    --player1-color: #ffafaf;
+    --player2-color: #a0d2ff;
+    --player3-color: #98f5e1;
 }
 
 body {
@@ -21,11 +25,12 @@ body {
     margin: 0;
     padding: 20px;
     box-sizing: border-box;
-    background: var(--bg-color);
-    overflow-x: hidden;
+    background-color: var(--bg-color);
+    overflow: hidden; /* Prevents background shapes from causing scrollbars */
     color: var(--text-color);
 }
 
+/* --- Vibrant Background --- */
 .background-shapes {
     position: absolute;
     top: 0;
@@ -33,6 +38,7 @@ body {
     width: 100%;
     height: 100%;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    opacity: 0.8; /* Slightly muted to not overwhelm the dark theme */
     clip-path: circle(40% at 10% 10%);
     z-index: -1;
 }
@@ -46,18 +52,17 @@ body {
     clip-path: circle(30% at 90% 90%);
 }
 
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }
 
-/* Glassmorphism Container */
+/* --- Dark Glassmorphism Container --- */
 .glass-container {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(40, 42, 46, 0.6); /* Dark semi-transparent background */
     border-radius: 20px;
     padding: 30px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 var(--shadow-dark);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     text-align: center;
     width: 100%;
     max-width: 400px;
@@ -72,210 +77,106 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-.control-group {
-    margin-bottom: 20px;
-    text-align: left;
+/* --- Game Layout --- */
+#game-container { display: flex; gap: 50px; align-items: center; justify-content: center; width: 100%; max-width: 1200px; }
+#board-area { position: relative; padding: 50px; }
+#game-board { display: flex; flex-direction: column; align-items: center; }
+
+/* --- Player Icons (Dark Mode) --- */
+.player-icon {
+    width: 60px; height: 60px; border-radius: 50%; position: absolute;
+    background-color: var(--bg-color);
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    display: none; justify-content: center; align-items: center;
+    font-size: 1.5em; font-weight: 600; transition: all 0.4s ease;
 }
 
-.control-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
+#player1-icon { bottom: 0; left: 0; transform: translate(-20%, 20%); }
+#player2-icon { bottom: 0; right: 0; transform: translate(20%, 20%); }
+#player3-icon { top: 0; left: 50%; transform: translate(-50%, -50%); }
+
+.player-icon.active { animation: glow 1.5s infinite alternate; }
+@keyframes glow {
+    from { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 5px var(--secondary-color); }
+    to { box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light), 0 0 30px var(--primary-color), 0 0 10px var(--primary-color); }
 }
 
-.control-group input,
-.control-group select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.3);
-    font-family: 'Poppins', sans-serif;
-    font-size: 1em;
-    box-sizing: border-box;
+.player-icon.bot-icon {
+    /* Bot Icon SVG with stroke color changed to light grey */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='2' stroke='%23e0e5ec' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10a2 2 0 0 1 2 2v1l1 1v3l-1 1h-12l-1 -1v-3l1 -1v-1a2 2 0 0 1 2 -2z'/%3E%3Cpath d='M10 16h4'/%3E%3Ccircle cx='8.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='15.5' cy='11.5' r='.5' fill='currentColor'/%3E%3Cpath d='M9 7l-1-4'/%3E%3Cpath d='M15 7l1-4'/%3E%3C/svg%3E");
+    background-size: 60%; background-repeat: no-repeat; background-position: center;
 }
 
-/* Neumorphism Button */
-.neumorphic-button {
+/* --- Dark Realistic 3D Game Circles --- */
+.row { display: flex; justify-content: center; }
+.circle {
+    width: 50px; height: 50px; border-radius: 50%; margin: 5px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.2em; font-weight: 600; cursor: pointer;
     background: var(--bg-color);
-    border: none;
-    border-radius: 50px;
-    padding: 15px 30px;
-    font-size: 1em;
-    font-weight: 600;
-    color: var(--text-color);
-    cursor: pointer;
+    box-shadow: 7px 7px 14px var(--shadow-dark), -7px -7px 14px var(--shadow-light);
+    transition: all 0.2s ease-out; flex-shrink: 0;
+}
+.circle:hover { transform: scale(1.05); }
+.circle.placed, .circle:active {
+    box-shadow: inset 7px 7px 14px var(--shadow-dark), inset -7px -7px 14px var(--shadow-light);
+    transform: scale(0.98); cursor: not-allowed;
+    animation: pop 0.2s ease-out;
+}
+@keyframes pop { from { opacity: 0.5; } to { opacity: 1; } }
+
+.circle.player1 { background-color: var(--player1-color); color: #333; }
+.circle.player2 { background-color: var(--player2-color); color: #333; }
+.circle.player3 { background-color: var(--player3-color); color: #333; }
+
+.circle.black-hole {
+    background: radial-gradient(circle, #434343 0%, #000000 100%);
+    box-shadow: inset 5px 5px 15px #000;
+    animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse { 0%, 100% { transform: scale(0.98); } 50% { transform: scale(1.02); } }
+
+/* --- Buttons & Controls (Dark Mode) --- */
+.neumorphic-button {
+    background: var(--bg-color); border: none; border-radius: 50px; padding: 15px 30px;
+    font-size: 1em; font-weight: 600; color: var(--text-color); cursor: pointer;
     box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
     transition: all 0.2s ease-in-out;
 }
-
-.neumorphic-button:hover {
-    box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
-}
-
+.neumorphic-button:hover { color: var(--primary-color); }
 .neumorphic-button:active {
     box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
 }
-
-#game-container {
-    display: flex;
-    gap: 40px;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 1200px;
+.control-group input, .control-group select {
+    width: 100%; padding: 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2); font-family: 'Poppins', sans-serif; font-size: 1em; box-sizing: border-box;
+    color: var(--text-color);
 }
+.control-group { margin-bottom: 20px; text-align: left; }
+.control-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+.bot-option { text-align: center; display: flex; align-items: center; justify-content: center; }
+.bot-option input { margin-right: 8px; }
 
-#game-board {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.row {
-    display: flex;
-    justify-content: center;
-}
-
-.circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2em;
-    font-weight: 600;
-    cursor: pointer;
-    background-color: var(--bg-color);
-    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
-    transition: all 0.2s ease-in-out;
-    flex-shrink: 0; /* Prevents circles from shrinking */
-}
-
-.circle:hover {
-    box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
-}
-
-.circle.placed {
-    box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
-    cursor: not-allowed;
-    animation: pop 0.3s ease-out;
-}
-
-@keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-.circle.player1 { background-color: var(--player1-color); }
-.circle.player2 { background-color: var(--player2-color); }
-.circle.player3 { background-color: var(--player3-color); }
-
-.circle.black-hole {
-    background-color: #333;
-    box-shadow: inset 8px 8px 16px #000, inset -8px -8px 16px #555;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(0.95); }
-    70% { transform: scale(1); }
-    100% { transform: scale(0.95); }
-}
-
-#game-info {
-    width: 100%;
-    max-width: 300px;
-}
-
-#scores p {
-    margin: 10px 0;
-    font-weight: bold;
-}
-
+/* --- Winner Overlay --- */
 #winner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    padding: 20px;
-    box-sizing: border-box;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Darker overlay */
+    display: flex; justify-content: center; align-items: center;
+    z-index: 100; padding: 20px; box-sizing: border-box;
 }
 
-#winner-overlay .glass-container {
-    animation: slideInUp 0.5s ease-out;
-}
-
-@keyframes slideInUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-#confetti-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 99;
-}
-
-/* --- RESPONSIVE DESIGN MEDIA QUERIES --- */
-
-/* For Tablets and smaller devices */
+/* --- Responsive Design --- */
 @media (max-width: 900px) {
-    #game-container {
-        flex-direction: column; /* Stack board and info vertically */
-        gap: 20px;
-    }
-    #game-info {
-        max-width: 400px; /* Allow info panel to be wider */
-    }
+    #game-container { flex-direction: column; gap: 30px; }
+    #board-area { padding: 50px 30px; }
+    #game-info { max-width: 450px; }
 }
-
-/* For Mobile Phones */
 @media (max-width: 480px) {
-    body {
-        padding: 10px;
-    }
-    
-    .glass-container {
-        padding: 20px;
-    }
-
-    #game-setup h1 {
-        font-size: 2em;
-    }
-
-    .circle {
-        width: 40px;
-        height: 40px;
-        margin: 4px;
-        font-size: 1em;
-    }
-}
-
-/* For Very Small Mobile Phones */
-@media (max-width: 360px) {
-    .circle {
-        width: 35px;
-        height: 35px;
-        margin: 3px;
-    }
+    body { padding: 10px; }
+    #board-area { padding: 40px 0; }
+    .player-icon { width: 50px; height: 50px; }
+    #player1-icon { bottom: -10px; left: -10px; }
+    #player2-icon { bottom: -10px; right: -10px; }
+    #player3-icon { top: -25px; }
+    .circle { width: 40px; height: 40px; margin: 4px; font-size: 1em; }
 }

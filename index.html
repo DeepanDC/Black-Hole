@@ -2,16 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- THIS IS THE KEY LINE FOR RESPONSIVENESS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Hole - A Responsive Game</title>
+    <title>Black Hole - Dark Materialistic Edition</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
+    <!-- The vibrant background shapes will be controlled by CSS -->
     <div class="background-shapes"></div>
+
     <div id="game-setup" class="glass-container animate__animated animate__fadeIn">
         <h1>Black Hole</h1>
+        
+        <div class="control-group bot-option">
+            <input type="checkbox" id="playWithBot">
+            <label for="playWithBot">Play against DC Bot</label>
+        </div>
+
         <div class="control-group">
             <label for="playerCount">Number of Players:</label>
             <select id="playerCount">
@@ -19,12 +26,19 @@
                 <option value="3">3 Players</option>
             </select>
         </div>
+
         <div id="player-names"></div>
         <button id="startGame" class="neumorphic-button">Start Game</button>
     </div>
 
     <div id="game-container" class="hidden">
-        <div id="game-board" class="animate__animated animate__zoomIn"></div>
+        <div id="board-area">
+            <div id="player1-icon" class="player-icon"></div>
+            <div id="player2-icon" class="player-icon"></div>
+            <div id="player3-icon" class="player-icon"></div>
+            <div id="game-board" class="animate__animated animate__zoomIn"></div>
+        </div>
+        
         <div id="game-info" class="glass-container animate__animated animate__fadeInRight">
             <h2>Game Status</h2>
             <p>Current Player: <span id="currentPlayerName"></span></p>
